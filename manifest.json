@@ -1,0 +1,19 @@
+{
+  "name": "Quality Management Portal",
+  "short_name": "QM Portal",
+  "start_url": "/Landing-page/index.html",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#1a1a1a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "logo.png",
+      "type": "image/png", "sizes": "192x192"
+    },
+    {
+      "src": "logo.png",
+      "type": "image/png", "sizes": "512x512"
+    }
+  ]
+}
