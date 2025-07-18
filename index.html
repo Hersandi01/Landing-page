@@ -6,32 +6,40 @@
   <title>QA System - PT Broad Far Indonesia</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      background-color: var(--bg);
+      background: linear-gradient(135deg, #f4f6f9, #dbe9f4);
       color: var(--text);
       transition: background-color 0.3s, color 0.3s;
     }
     :root {
-      --bg: #ffffff;
       --text: #000000;
       --card: #f0f0f0;
     }
     .dark {
-      --bg: #121212;
       --text: #ffffff;
       --card: #1e1e1e;
+      background: linear-gradient(135deg, #1f1f1f, #2a2a2a);
     }
     header {
       text-align: center;
-      padding: 20px;
+      padding: 30px 20px 20px;
+      border-bottom: 3px solid #ccc;
+      background: linear-gradient(to right, #f8f8f8, #e0e0e0);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     img {
       max-width: 180px;
     }
     h1 {
-      margin-top: 10px;
+      margin-top: 15px;
+      font-size: 28px;
+      border: 2px solid #aaa;
+      display: inline-block;
+      padding: 8px 20px;
+      border-radius: 10px;
+      background-color: #fff;
     }
     .container {
       display: flex;
@@ -49,6 +57,7 @@
       text-decoration: none;
       color: inherit;
       display: block;
+      border-left: 6px solid #555;
     }
     .card:hover {
       background-color: #ddd;
@@ -79,7 +88,7 @@
 <body>
   <div class="toggle-dark" onclick="toggleDarkMode()">🌙</div>
   <header>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABtEAAAGJCAYAAAD8JRyCAABENklEQVR4nO3dwXEbWZY27DMTvfh21G..." alt="NUSO Logo"/>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAR4AAABnCAYAAADWky1rAAATI0lEQVR4nO2df2wb53nHv7Rpm0q8jE..." alt="NUSO Logo"/>
     <h1>QA System</h1>
   </header>
 
@@ -98,6 +107,11 @@
       <span>✅ Verifikasi NCM</span>
       <div class="desc">Gunakan untuk memverifikasi barcode NCM sebelum proses selanjutnya.</div>
     </a>
+
+    <a class="card" href="#" onclick="openProtectedLink()">
+      <span>📊 Admin Database</span>
+      <div class="desc">Hanya untuk admin. Perlindungan dengan password ringan.</div>
+    </a>
   </div>
 
   <footer>
@@ -107,6 +121,15 @@
   <script>
     function toggleDarkMode() {
       document.body.classList.toggle("dark");
+    }
+
+    function openProtectedLink() {
+      const password = prompt("Masukkan password untuk mengakses database:");
+      if (password === "Broadfar2025") {
+        window.open("https://docs.google.com/spreadsheets/d/1brsiMDznmVUnpS1AVzA7hSW8jP7okPmcjextm1KmWGw/edit?gid=117335355", "_blank");
+      } else {
+        alert("Akses ditolak. Password salah.");
+      }
     }
   </script>
 </body>
