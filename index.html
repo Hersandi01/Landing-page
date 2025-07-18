@@ -28,8 +28,9 @@
             background-attachment: fixed;
             display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 20px;
+            /* PERUBAHAN: Mengubah alignment agar container mulai dari atas */
+            align-items: flex-start;
+            padding: 40px 20px; /* Menambah padding atas agar tidak terlalu mepet */
             box-sizing: border-box;
         }
 
@@ -59,12 +60,12 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.18);
-            /* PERUBAHAN: Menambahkan tinggi maksimum dan scroll otomatis */
+            /* Menambahkan tinggi maksimum dan scroll otomatis */
             max-height: 85vh; /* Batasi tinggi container hingga 85% dari tinggi layar */
             overflow-y: auto; /* Tampilkan scrollbar vertikal jika konten melebihi max-height */
         }
 
-        /* --- PERUBAHAN: Custom Scrollbar Styling --- */
+        /* Custom Scrollbar Styling */
         .container::-webkit-scrollbar {
             width: 8px;
         }
