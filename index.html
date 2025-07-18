@@ -65,7 +65,6 @@
         .logo {
             max-width: 180px; 
             margin-bottom: 20px;
-            /* PERUBAHAN: Efek cahaya ditambahkan untuk meningkatkan kontras */
             filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
         }
 
@@ -83,6 +82,20 @@
             line-height: 1.6;
             margin: 0 auto 30px auto;
             max-width: 90%;
+        }
+        
+        /* --- Section Title --- */
+        .section-title {
+            color: rgba(255, 255, 255, 0.8);
+            text-align: left;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-weight: 500;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 8px;
         }
 
         /* --- Button Container --- */
@@ -122,6 +135,23 @@
             width: 20px;
             height: 20px;
             stroke-width: 2;
+        }
+        
+        /* --- Disabled Button Style --- */
+        .disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: rgba(108, 117, 125, 0.1);
+        }
+        .disabled:hover {
+            transform: none;
+            background-color: rgba(108, 117, 125, 0.1);
+        }
+        .coming-soon {
+            font-size: 10px;
+            font-style: italic;
+            opacity: 0.7;
+            margin-left: auto;
         }
 
         /* --- Tombol Copy Link --- */
@@ -180,6 +210,8 @@
         </p>
         
         <div>
+            <!-- Kategori Quality & Production Forms -->
+            <h2 class="section-title">Quality & Production</h2>
             <div class="button-wrapper">
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSe1Teaz6lRkndDWNFggrWCDtugwoncd8f9Igfk1e0eh6stuOw/viewform" target="_blank" class="link-button">
                     <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
@@ -189,7 +221,6 @@
                     <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
                 </button>
             </div>
-            
             <div class="button-wrapper">
                 <a href="https://hersandi01.github.io/barcode-pwa/" target="_blank" class="link-button">
                      <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10m16-10v10M9 3h6m-6 18h6M4 12h16" /></svg>
@@ -199,7 +230,6 @@
                     <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
                 </button>
             </div>
-            
             <div class="button-wrapper">
                 <a href="https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec" target="_blank" class="link-button">
                     <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -209,19 +239,65 @@
                     <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
                 </button>
             </div>
-            
+            <div class="button-wrapper">
+                <a class="link-button disabled">
+                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                    <span>PACKER INPUT FORM</span><span class="coming-soon">Soon</span>
+                </a>
+            </div>
+             <div class="button-wrapper">
+                <a class="link-button disabled">
+                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                    <span>MAKER INPUT FORM</span><span class="coming-soon">Soon</span>
+                </a>
+            </div>
+            <div class="button-wrapper">
+                <a class="link-button disabled">
+                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span>START UP CHECKLIST</span><span class="coming-soon">Soon</span>
+                </a>
+            </div>
+            <div class="button-wrapper">
+                <a class="link-button disabled">
+                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.667 0l3.181-3.183m-4.991-2.691v4.992" /></svg>
+                    <span>BRAND CHANGE</span><span class="coming-soon">Soon</span>
+                </a>
+            </div>
+
+            <!-- Kategori Databases -->
+            <h2 class="section-title">Databases</h2>
             <div class="button-wrapper">
                 <button onclick="openPasswordModal('https://docs.google.com/spreadsheets/d/1brsiMDznmVUnpS1AVzA7hSW8jP7okPmcjextm1KmWGw/edit?gid=117335355#gid=117335355')" class="link-button">
                     <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                     <span>CONFIDENTIAL DATABASE</span>
                 </button>
             </div>
-
             <div class="button-wrapper">
                 <button onclick="openPasswordModal('https://docs.google.com/spreadsheets/d/1icmcYbS3Hnj54287a5r_zq49ox_aNbThI19vAlA1CFk/edit?gid=751743670#gid=751743670')" class="link-button">
                     <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                     <span>NCM DATABASE</span>
                 </button>
+            </div>
+
+            <!-- Kategori HR & General Forms -->
+            <h2 class="section-title">HR & General Forms</h2>
+            <div class="button-wrapper">
+                <a class="link-button disabled">
+                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>
+                    <span>HANDOVER DEVICE</span><span class="coming-soon">Soon</span>
+                </a>
+            </div>
+            <div class="button-wrapper">
+                <a class="link-button disabled">
+                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18" /></svg>
+                    <span>ON LEAVE FORM</span><span class="coming-soon">Soon</span>
+                </a>
+            </div>
+            <div class="button-wrapper">
+                <a class="link-button disabled">
+                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span>OVERTIME FORM</span><span class="coming-soon">Soon</span>
+                </a>
             </div>
         </div>
 
