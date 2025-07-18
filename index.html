@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QA System - PT Broad Far Indonesia</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background-color 0.3s, color 0.3s;
+    }
+    :root {
+      --bg: #ffffff;
+      --text: #000000;
+      --card: #f0f0f0;
+    }
+    .dark {
+      --bg: #121212;
+      --text: #ffffff;
+      --card: #1e1e1e;
+    }
+    header {
+      text-align: center;
+      padding: 20px;
+    }
+    img {
+      max-width: 180px;
+    }
+    h1 {
+      margin-top: 10px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+    }
+    .card {
+      background-color: var(--card);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .card:hover {
+      background-color: #ddd;
+    }
+    .card span {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    .desc {
+      font-size: 0.9em;
+      margin-top: 5px;
+      color: #555;
+    }
+    footer {
+      text-align: center;
+      font-size: 0.8em;
+      margin: 30px 0;
+    }
+    .toggle-dark {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="toggle-dark" onclick="toggleDarkMode()">🌙</div>
+  <header>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABtEAAAGJCAYAAAD8JRyCAABENklEQVR4nO3dwXEbWZY27DMTvfh21G..." alt="NUSO Logo"/>
+    <h1>QA System</h1>
+  </header>
+
+  <div class="container">
+    <a class="card" href="https://docs.google.com/forms/d/e/1FAIpQLSe1Teaz6lRkndDWNFggrWCDtugwoncd8f9Igfk1e0eh6stuOw/viewform" target="_blank">
+      <span>📄 Non-Conformance Product Form</span>
+      <div class="desc">Laporan ketidaksesuaian pada produk akhir.</div>
+    </a>
+
+    <a class="card" href="https://hersandi01.github.io/barcode-pwa/" target="_blank">
+      <span>📦 Non-Conformance Material Form</span>
+      <div class="desc">Laporan material yang tidak sesuai spesifikasi.</div>
+    </a>
+
+    <a class="card" href="https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec" target="_blank">
+      <span>✅ Verifikasi NCM</span>
+      <div class="desc">Gunakan untuk memverifikasi barcode NCM sebelum proses selanjutnya.</div>
+    </a>
+  </div>
+
+  <footer>
+    QA - PT Broad Far Indonesia
+  </footer>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+    }
+  </script>
+</body>
+</html>
