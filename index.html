@@ -1,136 +1,168 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>QA System - PT Broad Far Indonesia</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #f4f6f9, #dbe9f4);
-      color: var(--text);
-      transition: background-color 0.3s, color 0.3s;
-    }
-    :root {
-      --text: #000000;
-      --card: #f0f0f0;
-    }
-    .dark {
-      --text: #ffffff;
-      --card: #1e1e1e;
-      background: linear-gradient(135deg, #1f1f1f, #2a2a2a);
-    }
-    header {
-      text-align: center;
-      padding: 30px 20px 20px;
-      border-bottom: 3px solid #ccc;
-      background: linear-gradient(to right, #f8f8f8, #e0e0e0);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    img {
-      max-width: 180px;
-    }
-    h1 {
-      margin-top: 15px;
-      font-size: 28px;
-      border: 2px solid #aaa;
-      display: inline-block;
-      padding: 8px 20px;
-      border-radius: 10px;
-      background-color: #fff;
-    }
-    .container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      padding: 20px;
-      max-width: 500px;
-      margin: auto;
-    }
-    .card {
-      background-color: var(--card);
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      text-decoration: none;
-      color: inherit;
-      display: block;
-      border-left: 6px solid #555;
-    }
-    .card:hover {
-      background-color: #ddd;
-    }
-    .card span {
-      font-size: 1.2em;
-      font-weight: bold;
-    }
-    .desc {
-      font-size: 0.9em;
-      margin-top: 5px;
-      color: #555;
-    }
-    footer {
-      text-align: center;
-      font-size: 0.8em;
-      margin: 30px 0;
-    }
-    .toggle-dark {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      font-size: 20px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Manajemen Kualitas</title>
+    <style>
+        /* --- General Styling & Background --- */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        body {
+            background-image: url('background.jpg'); /* <-- PASTIKAN NAMA FILE BACKGROUND SESUAI */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- Dark Overlay --- */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 0;
+        }
+
+        /* --- Content Card --- */
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 550px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- Logo --- */
+        .logo {
+            max-width: 120px;
+            margin-bottom: 20px;
+        }
+
+        /* --- Title & Description --- */
+        h1 {
+            color: #1a1a1a;
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+
+        p.description {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 0 auto 30px auto;
+            max-width: 90%;
+        }
+
+        /* --- Link Buttons --- */
+        .link-button {
+            display: block;
+            color: white;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .link-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- Button Colors --- */
+        .produk { background: linear-gradient(45deg, #007bff, #0056b3); }
+        .material { background: linear-gradient(45deg, #28a745, #218838); }
+        .verifikasi { background: linear-gradient(45deg, #ffc107, #e0a800); color: #212529; }
+        .database { background: linear-gradient(45deg, #dc3545, #c82333); }
+        
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            p.description {
+                font-size: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="toggle-dark" onclick="toggleDarkMode()">🌙</div>
-  <header>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAR4AAABnCAYAAADWky1rAAATI0lEQVR4nO2df2wb53nHv7Rpm0q8jE..." alt="NUSO Logo"/>
-    <h1>QA System</h1>
-  </header>
 
-  <div class="container">
-    <a class="card" href="https://docs.google.com/forms/d/e/1FAIpQLSe1Teaz6lRkndDWNFggrWCDtugwoncd8f9Igfk1e0eh6stuOw/viewform" target="_blank">
-      <span>📄 Non-Conformance Product Form</span>
-      <div class="desc">Laporan ketidaksesuaian pada produk akhir.</div>
-    </a>
+    <div class="container">
+        <img src="logo.png" alt="Logo Perusahaan" class="logo"> <h1>Portal Manajemen Kualitas</h1>
+        
+        <p class="description">
+            Portal ini merupakan pusat akses terpadu untuk semua formulir, aplikasi, dan data terkait proses <i>Non-Conformance Product</i> (NCP) & <i>Non-Conformance Material</i> (NCM).
+        </p>
+        
+        <div>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSe1Teaz6lRkndDWNFggrWCDtugwoncd8f9Igfk1e0eh6stuOw/viewform" target="_blank" class="link-button produk">
+                📝 NON-CONFORMANCE PRODUCT FORM
+            </a>
+            
+            <a href="https://hersandi01.github.io/barcode-pwa/" target="_blank" class="link-button material">
+                📦 NON-CONFORMANCE MATERIAL FORM
+            </a>
+            
+            <a href="https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec" target="_blank" class="link-button verifikasi">
+                ✅ VERIFIKASI NCM
+            </a>
+            
+            <a onclick="promptPassword()" class="link-button database">
+                🔒 DATABASE (KONFIDENSIAL)
+            </a>
+        </div>
+    </div>
 
-    <a class="card" href="https://hersandi01.github.io/barcode-pwa/" target="_blank">
-      <span>📦 Non-Conformance Material Form</span>
-      <div class="desc">Laporan material yang tidak sesuai spesifikasi.</div>
-    </a>
+    <script>
+        function promptPassword() {
+            const correctPassword = 'Broadfar2025';
+            const secretUrl = 'https://docs.google.com/spreadsheets/d/1brsiMDznmVUnpS1AVzA7hSW8jP7okPmcjextm1KmWGw/edit?gid=117335355#gid=117335355';
+            
+            const enteredPassword = prompt("Silakan masukkan password untuk mengakses database:", "");
+            
+            if (enteredPassword === null) {
+                // User menekan tombol "Cancel"
+                return;
+            }
 
-    <a class="card" href="https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec" target="_blank">
-      <span>✅ Verifikasi NCM</span>
-      <div class="desc">Gunakan untuk memverifikasi barcode NCM sebelum proses selanjutnya.</div>
-    </a>
+            if (enteredPassword === correctPassword) {
+                // Buka link di tab baru jika password benar
+                window.open(secretUrl, '_blank');
+            } else {
+                alert("Password Salah. Akses Ditolak.");
+            }
+        }
+    </script>
 
-    <a class="card" href="#" onclick="openProtectedLink()">
-      <span>📊 Admin Database</span>
-      <div class="desc">Hanya untuk admin. Perlindungan dengan password ringan.</div>
-    </a>
-  </div>
-
-  <footer>
-    QA - PT Broad Far Indonesia
-  </footer>
-
-  <script>
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark");
-    }
-
-    function openProtectedLink() {
-      const password = prompt("Masukkan password untuk mengakses database:");
-      if (password === "Broadfar2025") {
-        window.open("https://docs.google.com/spreadsheets/d/1brsiMDznmVUnpS1AVzA7hSW8jP7okPmcjextm1KmWGw/edit?gid=117335355", "_blank");
-      } else {
-        alert("Akses ditolak. Password salah.");
-      }
-    }
-  </script>
 </body>
 </html>
