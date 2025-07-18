@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Manajemen Kualitas</title>
+    <title>Quality Management Portal</title>
+    
+    <!-- PWA Manifest and Theme Color -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a1a"/>
+    <link rel="apple-touch-icon" href="logo.png">
+
     <style>
         /* --- General Styling & Background --- */
         body, html {
@@ -15,7 +21,6 @@
         }
 
         body {
-            /* Pastikan nama file background Anda adalah 'background.jpg' atau sesuaikan di sini */
             background-image: url('background.jpg');
             background-size: cover;
             background-position: center;
@@ -28,7 +33,7 @@
             box-sizing: border-box;
         }
 
-        /* --- Lapisan Gelap di atas Background --- */
+        /* --- Dark Overlay --- */
         body::before {
             content: '';
             position: absolute;
@@ -36,17 +41,17 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5); /* Sedikit lebih gelap untuk kontras yang lebih baik */
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 0;
         }
 
-        /* --- Kotak Konten (Glassmorphism Effect) --- */
+        /* --- Content Card (Glassmorphism Effect) --- */
         .container {
             position: relative;
             z-index: 1;
             width: 100%;
             max-width: 550px;
-            background: rgba(255, 255, 255, 0.1); /* Latar belakang transparan */
+            background: rgba(255, 255, 255, 0.1);
             padding: 40px 30px;
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -58,35 +63,44 @@
 
         /* --- Logo --- */
         .logo {
-            /* PERUBAHAN: Ukuran logo diperbesar */
-            max-width: 150px; 
+            max-width: 180px; 
             margin-bottom: 20px;
         }
 
-        /* --- Judul & Deskripsi --- */
+        /* --- Title & Description --- */
         h1 {
-            color: #f8f9fa; /* Warna teks putih agar kontras */
+            color: #f8f9fa;
             margin: 0 0 10px 0;
             font-size: 28px;
             font-weight: 600;
         }
 
         p.description {
-            color: #e9ecef; /* Warna teks abu-abu terang */
+            color: #e9ecef;
             font-size: 16px;
             line-height: 1.6;
             margin: 0 auto 30px auto;
             max-width: 90%;
         }
 
-        /* --- Tombol Link (Desain Simpel & Elegan) --- */
+        /* --- Button Container --- */
+        .button-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+        }
+
+        /* --- Link Buttons --- */
         .link-button {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
             width: 100%;
             box-sizing: border-box;
             color: #f8f9fa;
             padding: 16px;
-            margin: 12px 0;
             border-radius: 8px;
             text-decoration: none;
             font-size: 16px;
@@ -101,132 +115,114 @@
             background-color: rgba(255, 255, 255, 0.25);
             transform: translateY(-3px);
         }
+        
+        .button-icon {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+        }
+
+        /* --- Tombol Copy Link --- */
+        .copy-button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.2);
+            border: none;
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .copy-button:hover {
+            background: rgba(0,0,0,0.4);
+        }
+        .copy-icon {
+            width: 18px;
+            height: 18px;
+            stroke: white;
+        }
 
         /* --- Modal untuk Password --- */
-        .password-modal {
-            display: none; /* Awalnya disembunyikan */
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-        }
+        .password-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center; }
+        .password-modal-content { background-color: #fefefe; color: #333; margin: auto; padding: 30px; border: 1px solid #888; width: 90%; max-width: 400px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; }
+        .password-input { width: calc(100% - 24px); padding: 12px; margin-top: 8px; margin-bottom: 20px; display: inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        .password-submit-button { background-color: #007bff; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
+        .password-submit-button:hover { background-color: #0056b3; }
+        .close-button { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; }
+        #passwordError { color: red; margin-top: 10px; display: none; font-size: 14px; }
 
-        .password-modal-content {
-            background-color: #fefefe;
-            color: #333;
-            margin: auto;
-            padding: 30px;
-            border: 1px solid #888;
-            width: 90%;
-            max-width: 400px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            position: relative;
-        }
+        /* --- Style untuk Teks Footer --- */
+        .footer-text { margin-top: 30px; margin-bottom: -15px; color: rgba(255, 255, 255, 0.7); font-size: 14px; }
 
-        .password-input {
-            width: calc(100% - 24px);
-            padding: 12px;
-            margin-top: 8px;
-            margin-bottom: 20px;
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-
-        .password-submit-button {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-        }
-
-        .password-submit-button:hover {
-            background-color: #0056b3;
-        }
-
-        .close-button {
-            color: #aaa;
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        #passwordError {
-            color: red;
-            margin-top: 10px;
-            display: none; /* Sembunyikan pesan error awalnya */
-            font-size: 14px;
-        }
-
-        /* --- PERUBAHAN: Style untuk Teks Footer --- */
-        .footer-text {
-            margin-top: 30px;
-            margin-bottom: -15px;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
-        }
-
-        /* --- Penyesuaian untuk Layar Kecil (HP) --- */
+        /* --- Responsive Adjustments --- */
         @media (max-width: 600px) {
-            .container {
-                padding: 30px 20px;
-            }
-            h1 {
-                font-size: 24px;
-            }
-            p.description {
-                font-size: 15px;
-            }
+            .container { padding: 30px 20px; }
+            h1 { font-size: 24px; }
+            p.description { font-size: 15px; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img src="logo.png" alt="Logo Perusahaan" class="logo">
+        <img src="logo.png" alt="Company Logo" class="logo">
         
-        <h1>Portal Manajemen Kualitas</h1>
+        <h1>Quality Management Portal</h1>
         
         <p class="description">
-            Portal ini merupakan pusat akses terpadu untuk semua formulir, aplikasi, dan data terkait proses <i>Non-Conformance Product</i> (NCP) & <i>Non-Conformance Material</i> (NCM).
+            This portal is a centralized access point for all forms, applications, and data related to the Non-Conformance Product (NCP) & Non-Conformance Material (NCM) processes.
         </p>
         
         <div>
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSe1Teaz6lRkndDWNFggrWCDtugwoncd8f9Igfk1e0eh6stuOw/viewform" target="_blank" class="link-button">
-                📝 NON-CONFORMANCE PRODUCT FORM
-            </a>
+            <div class="button-wrapper">
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSe1Teaz6lRkndDWNFggrWCDtugwoncd8f9Igfk1e0eh6stuOw/viewform" target="_blank" class="link-button">
+                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    <span>NCP FORM</span>
+                </a>
+                <button class="copy-button" onclick="copyToClipboard(event, 'https://docs.google.com/forms/d/e/1FAIpQLSe1Teaz6lRkndDWNFggrWCDtugwoncd8f9Igfk1e0eh6stuOw/viewform')">
+                    <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                </button>
+            </div>
             
-            <a href="https://hersandi01.github.io/barcode-pwa/" target="_blank" class="link-button">
-                📦 NON-CONFORMANCE MATERIAL FORM
-            </a>
+            <div class="button-wrapper">
+                <a href="https://hersandi01.github.io/barcode-pwa/" target="_blank" class="link-button">
+                     <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10m16-10v10M9 3h6m-6 18h6M4 12h16" /></svg>
+                    <span>NCM FORM</span>
+                </a>
+                <button class="copy-button" onclick="copyToClipboard(event, 'https://hersandi01.github.io/barcode-pwa/')">
+                    <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                </button>
+            </div>
             
-            <a href="https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec" target="_blank" class="link-button">
-                ✅ VERIFIKASI NCM
-            </a>
+            <div class="button-wrapper">
+                <a href="https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec" target="_blank" class="link-button">
+                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span>NCM VERIFICATION</span>
+                </a>
+                <button class="copy-button" onclick="copyToClipboard(event, 'https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec')">
+                    <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                </button>
+            </div>
             
-            <!-- Tombol ini sekarang menjadi <button> untuk membuka modal -->
-            <button onclick="openPasswordModal()" class="link-button">
-                🔒 DATABASE (KONFIDENSIAL)
-            </button>
+            <div class="button-wrapper">
+                <button onclick="openPasswordModal('https://docs.google.com/spreadsheets/d/1brsiMDznmVUnpS1AVzA7hSW8jP7okPmcjextm1KmWGw/edit?gid=117335355#gid=117335355')" class="link-button">
+                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                    <span>CONFIDENTIAL DATABASE</span>
+                </button>
+            </div>
+
+            <div class="button-wrapper">
+                <button onclick="openPasswordModal('https://docs.google.com/spreadsheets/d/1icmcYbS3Hnj54287a5r_zq49ox_aNbThI19vAlA1CFk/edit?gid=751743670#gid=751743670')" class="link-button">
+                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                    <span>NCM DATABASE</span>
+                </button>
+            </div>
         </div>
 
-        <!-- PERUBAHAN: Teks Footer ditambahkan di sini -->
         <p class="footer-text">QA - PT Broad Far Indonesia</p>
     </div>
 
@@ -234,52 +230,43 @@
     <div id="passwordModal" class="password-modal">
         <div class="password-modal-content">
             <span onclick="closePasswordModal()" class="close-button">&times;</span>
-            <h2>Akses Terbatas</h2>
-            <p style="font-size:15px; color:#666;">Silakan masukkan password untuk melanjutkan.</p>
+            <h2>Restricted Access</h2>
+            <p style="font-size:15px; color:#666;">Please enter the password to continue.</p>
             <input type="password" id="passwordInput" class="password-input" placeholder="Password...">
-            <button onclick="checkPassword()" class="password-submit-button">Masuk</button>
-            <p id="passwordError">Password salah. Akses ditolak.</p>
+            <button onclick="checkPassword()" class="password-submit-button">Enter</button>
+            <p id="passwordError">Incorrect password. Access denied.</p>
         </div>
     </div>
 
     <script>
-        // --- Logic untuk Password Modal ---
-
-        // Ambil elemen-elemen yang dibutuhkan
+        // --- Logic for Password Modal ---
         const modal = document.getElementById('passwordModal');
         const passwordInput = document.getElementById('passwordInput');
         const passwordError = document.getElementById('passwordError');
-
-        // Definisikan password dan URL rahasia
         const correctPassword = 'Broadfar2025';
-        const secretUrl = 'https://docs.google.com/spreadsheets/d/1brsiMDznmVUnpS1AVzA7hSW8jP7okPmcjextm1KmWGw/edit?gid=117335355#gid=117335355';
+        let targetUrl = '';
 
-        // Fungsi untuk membuka modal
-        function openPasswordModal() {
+        function openPasswordModal(url) {
+            targetUrl = url;
             modal.style.display = 'flex';
-            passwordInput.value = ''; // Kosongkan input setiap kali modal dibuka
-            passwordError.style.display = 'none'; // Sembunyikan pesan error
-            passwordInput.focus(); // Langsung fokus ke input field
+            passwordInput.value = '';
+            passwordError.style.display = 'none';
+            passwordInput.focus();
         }
 
-        // Fungsi untuk menutup modal
         function closePasswordModal() {
             modal.style.display = 'none';
         }
 
-        // Fungsi untuk memeriksa password
         function checkPassword() {
             if (passwordInput.value === correctPassword) {
-                // Jika benar, buka URL di tab baru dan tutup modal
-                window.open(secretUrl, '_blank');
+                window.open(targetUrl, '_blank');
                 closePasswordModal();
             } else {
-                // Jika salah, tampilkan pesan error
                 passwordError.style.display = 'block';
             }
         }
 
-        // Tambahkan event listener agar bisa menekan 'Enter' untuk submit
         passwordInput.addEventListener('keyup', function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
@@ -287,11 +274,38 @@
             }
         });
 
-        // Tambahkan event listener untuk menutup modal jika klik di luar area konten
         window.onclick = function(event) {
             if (event.target == modal) {
                 closePasswordModal();
             }
+        }
+
+        // --- Logic for Copy to Clipboard ---
+        function copyToClipboard(event, textToCopy) {
+            event.stopPropagation(); // Mencegah link utama terbuka
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const copyButton = event.currentTarget;
+                const originalIcon = copyButton.innerHTML;
+                copyButton.innerHTML = 'Copied!';
+                setTimeout(() => {
+                    copyButton.innerHTML = originalIcon;
+                }, 2000); // Kembali ke ikon semula setelah 2 detik
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        // --- PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/Landing-page/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
         }
     </script>
 
