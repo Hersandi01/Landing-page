@@ -211,8 +211,22 @@
         .close-button { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; }
         #passwordError { color: red; margin-top: 10px; display: none; font-size: 14px; }
 
-        /* --- Style untuk Teks Footer --- */
-        .footer-text { margin-top: 30px; margin-bottom: -15px; color: rgba(255, 255, 255, 0.7); font-size: 14px; }
+        /* --- PERUBAHAN: Style untuk Teks Footer --- */
+        .footer-credit {
+            margin-top: 30px;
+            margin-bottom: -15px;
+            line-height: 1.5;
+        }
+        .footer-text {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+        .developer-credit {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+        }
 
         /* --- Responsive Adjustments --- */
         @media (max-width: 600px) {
@@ -349,7 +363,11 @@
             </div>
         </div>
 
-        <p class="footer-text">QA - PT Broad Far Indonesia</p>
+        <!-- PERUBAHAN: Teks footer diperbarui -->
+        <div class="footer-credit">
+            <p class="footer-text">QA - PT Broad Far Indonesia | Portal v1.0</p>
+            <p class="developer-credit">Developed by Hersandi Hamdan Pratama</p>
+        </div>
     </div>
 
     <!-- The Modal -->
@@ -436,4 +454,4 @@
     </script>
 
 </body>
-</ht
+</html>
