@@ -1,5 +1,5 @@
 // Nama cache unik untuk versi aplikasi Anda - NAIKKAN VERSI SETIAP ADA PERUBAHAN
-const CACHE_NAME = 'qm-portal-cache-v2';
+const CACHE_NAME = 'qm-portal-cache-v3';
 // Daftar file yang perlu di-cache untuk mode offline
 const urlsToCache = [
   '/Landing-page/',
