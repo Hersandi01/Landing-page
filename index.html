@@ -211,7 +211,7 @@
         .close-button { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; }
         #passwordError { color: red; margin-top: 10px; display: none; font-size: 14px; }
 
-        /* --- PERUBAHAN: Style untuk Teks Footer --- */
+        /* --- Style untuk Teks Footer --- */
         .footer-credit {
             margin-top: 30px;
             margin-bottom: -15px;
@@ -337,6 +337,13 @@
                     <span>DATABASE HANDOVER DEVICE</span>
                 </button>
             </div>
+            <!-- PERUBAHAN: Tombol Database On Leave ditambahkan -->
+            <div class="button-wrapper">
+                <button onclick="openPasswordModal('https://docs.google.com/spreadsheets/d/1A4pbgRNnF5o4ami9bEG-MViqXn1ueZkgHQr0cjjqfqs/edit?gid=636859897#gid=636859897')" class="link-button">
+                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                    <span>DATABASE ON LEAVE</span>
+                </button>
+            </div>
 
             <!-- Kategori HR & General Forms -->
             <h2 class="section-title">HR & General Forms</h2>
@@ -349,11 +356,15 @@
                     <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
                 </button>
             </div>
+            <!-- PERUBAHAN: Tombol On Leave Form diaktifkan -->
             <div class="button-wrapper">
-                <a class="link-button disabled">
+                <a href="https://script.google.com/macros/s/AKfycby16V8knAGHZH0rcv0VFkZw-q1bzqrOEN-aEAMOcs1PEgr-rR7YIN7qWM8nCsMfHZZBQg/exec" target="_blank" class="link-button">
                     <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18" /></svg>
-                    <span>ON LEAVE FORM</span><span class="coming-soon">Soon</span>
+                    <span>ON LEAVE FORM</span>
                 </a>
+                <button class="copy-button" onclick="copyToClipboard(event, 'https://script.google.com/macros/s/AKfycby16V8knAGHZH0rcv0VFkZw-q1bzqrOEN-aEAMOcs1PEgr-rR7YIN7qWM8nCsMfHZZBQg/exec')">
+                    <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                </button>
             </div>
             <div class="button-wrapper">
                 <a class="link-button disabled">
@@ -363,7 +374,6 @@
             </div>
         </div>
 
-        <!-- PERUBAHAN: Teks footer diperbarui -->
         <div class="footer-credit">
             <p class="footer-text">QA - PT Broad Far Indonesia | Portal v1.0</p>
             <p class="developer-credit">Developed by Hersandi Hamdan Pratama</p>
