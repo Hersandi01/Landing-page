@@ -1,6 +1,9 @@
-// Nama cache unik untuk versi aplikasi Anda - NAIKKAN VERSI SETIAP ADA PERUBAHAN
-const CACHE_NAME = 'qm-portal-cache-v3';
-// Daftar file yang perlu di-cache untuk mode offline
+// Service Worker v2.0 dengan Auto-Update
+// PENTING: Naikkan versi setiap ada perubahan
+const CACHE_VERSION = 'qm-portal-v2.0.1';
+const CACHE_NAME = `${CACHE_VERSION}-static`;
+
+// File yang di-cache
 const urlsToCache = [
   '/Landing-page/',
   '/Landing-page/index.html',
@@ -8,51 +11,86 @@ const urlsToCache = [
   '/Landing-page/background.jpg'
 ];
 
-// Event 'install': dipicu saat service worker diinstal
+// Install - cache semua resources
 self.addEventListener('install', event => {
-  // Menunggu hingga proses caching selesai
+  console.log('[SW] Installing version:', CACHE_VERSION);
+  
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Cache dibuka');
-        // Menambahkan semua URL yang ditentukan ke dalam cache
+        console.log('[SW] Caching files');
         return cache.addAll(urlsToCache);
+      })
+      .then(() => {
+        // Skip waiting agar SW baru langsung aktif
+        return self.skipWaiting();
       })
   );
 });
 
-// Event 'fetch': dipicu setiap kali ada permintaan resource (misal: gambar, file)
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    // Mencari resource yang diminta di dalam cache terlebih dahulu
-    caches.match(event.request)
-      .then(response => {
-        // Jika resource ditemukan di cache, kembalikan dari cache
-        if (response) {
-          return response;
-        }
-        // Jika tidak ditemukan, lanjutkan untuk mengambil dari jaringan
-        return fetch(event.request);
-      }
-    )
+// Activate - bersihkan cache lama
+self.addEventListener('activate', event => {
+  console.log('[SW] Activating version:', CACHE_VERSION);
+  
+  event.waitUntil(
+    caches.keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            // Hapus semua cache yang bukan versi sekarang
+            if (cacheName !== CACHE_NAME) {
+              console.log('[SW] Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+      .then(() => {
+        // Claim semua clients agar SW baru langsung mengontrol
+        return self.clients.claim();
+      })
   );
 });
 
-// Event 'activate': dipicu saat service worker baru mengambil alih
-// Bagian ini penting untuk membersihkan cache lama
-self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            // Hapus cache lama jika namanya tidak sesuai dengan CACHE_NAME yang baru
-            console.log('Menghapus cache lama:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+// Fetch - strategi Network First dengan fallback ke cache
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    // Coba ambil dari network dulu
+    fetch(event.request)
+      .then(response => {
+        // Jika berhasil, simpan ke cache dan return
+        if (response && response.status === 200) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME)
+            .then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+        }
+        return response;
+      })
+      .catch(() => {
+        // Jika network gagal, gunakan cache
+        return caches.match(event.request)
+          .then(cachedResponse => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            // Jika tidak ada di cache, return error page sederhana
+            return new Response('Offline - Content not available', {
+              status: 503,
+              statusText: 'Service Unavailable',
+              headers: new Headers({
+                'Content-Type': 'text/plain'
+              })
+            });
+          });
+      })
   );
+});
+
+// Listen untuk skip waiting message dari client
+self.addEventListener('message', event => {
+  if (event.data && event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
 });
