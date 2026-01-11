@@ -6,457 +6,761 @@
     <title>Quality Management Portal</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1a1a1a"/>
+    <meta name="theme-color" content="#0f172a"/>
     <link rel="apple-touch-icon" href="logo.png">
+    
+    <!-- Mencegah cache HTML -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 
     <style>
-        /* --- General Styling & Background --- */
-        body, html {
+        * {
             margin: 0;
             padding: 0;
-            height: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden; /* Mencegah body scroll */
-        }
-
-        body {
-            background-image: url('background.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            display: flex;
-            justify-content: center;
-            /* Mengubah alignment agar container mulai dari atas */
-            align-items: flex-start;
-            padding: 40px 20px; /* Menambah padding atas agar tidak terlalu mepet */
             box-sizing: border-box;
         }
 
-        /* --- Dark Overlay --- */
-        body::before {
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #8b5cf6;
+            --surface: rgba(15, 23, 42, 0.85);
+            --surface-light: rgba(30, 41, 59, 0.8);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --border: rgba(148, 163, 184, 0.2);
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            animation: drift 20s ease-in-out infinite;
+        }
+
+        @keyframes drift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(-10%, -10%) rotate(120deg); }
+            66% { transform: translate(10%, 10%) rotate(240deg); }
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .logo {
+            max-width: 140px;
+            filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5)); }
+            50% { filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.8)); }
+        }
+
+        h1 {
+            color: var(--text-primary);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .description {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Version Badge */
+        .version-badge {
+            display: inline-block;
+            background: var(--surface-light);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        /* Grid Layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section Cards */
+        .section {
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-icon {
+            width: 24px;
+            height: 24px;
+            stroke: var(--primary);
+        }
+
+        /* Links */
+        .link-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .link-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+
+        .link-item::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.3s;
         }
 
-        /* --- Content Card (Glassmorphism Effect) --- */
-        .container {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 550px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 40px 30px;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            /* Menambahkan tinggi maksimum dan scroll otomatis */
-            max-height: 85vh; /* Batasi tinggi container hingga 85% dari tinggi layar */
-            overflow-y: auto; /* Tampilkan scrollbar vertikal jika konten melebihi max-height */
+        .link-item:hover::before {
+            transform: scaleY(1);
         }
 
-        /* Custom Scrollbar Styling */
-        .container::-webkit-scrollbar {
-            width: 8px;
+        .link-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--primary);
+            transform: translateX(5px);
         }
 
-        .container::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        .container::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-        }
-
-        .container::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-
-        /* --- Logo --- */
-        .logo {
-            max-width: 180px; 
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
-        }
-
-        /* --- Title & Description --- */
-        h1 {
-            color: #f8f9fa;
-            margin: 0 0 10px 0;
-            font-size: 28px;
-            font-weight: 600;
-        }
-
-        p.description {
-            color: #e9ecef;
-            font-size: 16px;
-            line-height: 1.6;
-            margin: 0 auto 30px auto;
-            max-width: 90%;
-        }
-        
-        /* --- Section Title --- */
-        .section-title {
-            color: rgba(255, 255, 255, 0.8);
-            text-align: left;
-            margin-top: 25px;
-            margin-bottom: 10px;
-            font-weight: 500;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 8px;
-        }
-
-        /* --- Button Container --- */
-        .button-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            margin: 12px 0;
-        }
-
-        /* --- Link Buttons --- */
         .link-button {
+            flex: 1;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 12px;
-            width: 100%;
-            box-sizing: border-box;
-            color: #f8f9fa;
-            padding: 16px;
-            border-radius: 8px;
+            gap: 0.75rem;
+            color: var(--text-primary);
             text-decoration: none;
-            font-size: 16px;
             font-weight: 500;
-            transition: background-color 0.3s, transform 0.2s;
-            cursor: pointer;
-            background-color: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .link-button:hover {
-            background-color: rgba(255, 255, 255, 0.25);
-            transform: translateY(-3px);
-        }
-        
-        .button-icon {
+        .link-icon {
             width: 20px;
             height: 20px;
-            stroke-width: 2;
-        }
-        
-        /* --- Disabled Button Style --- */
-        .disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            background-color: rgba(108, 117, 125, 0.1);
-        }
-        .disabled:hover {
-            transform: none;
-            background-color: rgba(108, 117, 125, 0.1);
-        }
-        .coming-soon {
-            font-size: 10px;
-            font-style: italic;
-            opacity: 0.7;
-            margin-left: auto;
+            stroke: var(--primary);
+            flex-shrink: 0;
         }
 
-        /* --- Tombol Copy Link --- */
-        .copy-button {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0,0,0,0.2);
+        .copy-btn {
+            background: rgba(59, 130, 246, 0.2);
             border: none;
-            border-radius: 6px;
-            padding: 8px;
+            padding: 0.5rem;
+            border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .copy-button:hover {
-            background: rgba(0,0,0,0.4);
+
+        .copy-btn:hover {
+            background: var(--primary);
         }
+
         .copy-icon {
             width: 18px;
             height: 18px;
-            stroke: white;
+            stroke: var(--text-primary);
         }
 
-        /* --- Modal untuk Password --- */
-        .password-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center; }
-        .password-modal-content { background-color: #fefefe; color: #333; margin: auto; padding: 30px; border: 1px solid #888; width: 90%; max-width: 400px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; }
-        .password-input { width: calc(100% - 24px); padding: 12px; margin-top: 8px; margin-bottom: 20px; display: inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
-        .password-submit-button { background-color: #007bff; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
-        .password-submit-button:hover { background-color: #0056b3; }
-        .close-button { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; }
-        #passwordError { color: red; margin-top: 10px; display: none; font-size: 14px; }
-
-        /* --- Style untuk Teks Footer --- */
-        .footer-credit {
-            margin-top: 30px;
-            margin-bottom: -15px;
-            line-height: 1.5;
+        /* Disabled State */
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
         }
+
+        .coming-soon {
+            font-size: 0.75rem;
+            color: var(--warning);
+            margin-left: auto;
+        }
+
+        /* Password Protected */
+        .protected {
+            cursor: pointer;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            width: 90%;
+            max-width: 400px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .modal-title {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .modal-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .error-msg {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            animation: fadeIn 1s ease-out 0.6s both;
+        }
+
         .footer-text {
-            margin: 0;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 14px;
-        }
-        .developer-credit {
-            margin: 0;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 12px;
+            margin-bottom: 0.5rem;
         }
 
-        /* --- Responsive Adjustments --- */
-        @media (max-width: 600px) {
-            .container { padding: 30px 20px; }
-            h1 { font-size: 24px; }
-            p.description { font-size: 15px; }
+        .developer {
+            opacity: 0.7;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 1.25rem;
+            }
         }
     </style>
 </head>
 <body>
-
+    <div class="bg-animation"></div>
+    
     <div class="container">
-        <img src="logo.png" alt="Company Logo" class="logo">
-        
-        <h1>Quality Management Portal</h1>
-        
-        <p class="description">
-            This portal is a centralized access point for all forms, applications, and data related to the Non-Conformance Product (NCP) & Non-Conformance Material (NCM) processes.
-        </p>
-        
-        <div>
-            <h2 class="section-title">Quality & Production</h2>
-            <div class="button-wrapper">
-                <a href="https://script.google.com/macros/s/AKfycbzy1uyzKqQeroolMP31Ef009bt6HXaQtzuG8xzGnFoiY6e94uDm2XICnUVOJV0GYlUT/exec" target="_blank" class="link-button">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                    <span>NCP FORM</span>
-                </a>
-                <button class="copy-button" onclick="copyToClipboard(event, 'https://script.google.com/macros/s/AKfycbzy1uyzKqQeroolMP31Ef009bt6HXaQtzuG8xzGnFoiY6e94uDm2XICnUVOJV0GYlUT/exec')">
-                    <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                </button>
+        <header>
+            <div class="logo-container">
+                <img src="logo.png" alt="Company Logo" class="logo">
             </div>
-            <div class="button-wrapper">
-                <a href="https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec" target="_blank" class="link-button">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10m16-10v10M9 3h6m-6 18h6M4 12h16" /></svg>
-                    <span>NCM FORM</span>
-                </a>
-                <button class="copy-button" onclick="copyToClipboard(event, 'https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec')">
-                    <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                </button>
-            </div>
-            <div class="button-wrapper">
-                <a href="https://script.google.com/macros/s/AKfycby9lHNWMLqLA1OigiJlbGnBYU5d8pQwQUR-WjgNm1z2U7BYZ0zRxxfxS0GmKtV1RvrDeQ/exec" target="_blank" class="link-button">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-                    <span>FLOOR SPECIFICATION</span>
-                </a>
-                <button class="copy-button" onclick="copyToClipboard(event, 'https://script.google.com/macros/s/AKfycby9lHNWMLqLA1OigiJlbGnBYU5d8pQwQUR-WjgNm1z2U7BYZ0zRxxfxS0GmKtV1RvrDeQ/exec')">
-                    <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                </button>
+            <h1>Quality Management Portal</h1>
+            <p class="description">
+                Centralized access point for all forms, applications, and data related to NCP & NCM processes
+            </p>
+            <div class="version-badge">v2.0 • Updated Jan 2026</div>
+        </header>
+
+        <div class="content-grid">
+            <!-- Quality & Production Section -->
+            <div class="section">
+                <h2 class="section-title">
+                    <svg class="section-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Quality & Production
+                </h2>
+                <div class="link-list">
+                    <div class="link-item">
+                        <a href="https://script.google.com/macros/s/AKfycbzy1uyzKqQeroolMP31Ef009bt6HXaQtzuG8xzGnFoiY6e94uDm2XICnUVOJV0GYlUT/exec" target="_blank" class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            NCP Form
+                        </a>
+                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycbzy1uyzKqQeroolMP31Ef009bt6HXaQtzuG8xzGnFoiY6e94uDm2XICnUVOJV0GYlUT/exec')">
+                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="link-item">
+                        <a href="https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec" target="_blank" class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10m16-10v10M9 3h6m-6 18h6M4 12h16"/>
+                            </svg>
+                            NCM Form
+                        </a>
+                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec')">
+                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="link-item">
+                        <a href="https://script.google.com/macros/s/AKfycby9lHNWMLqLA1OigiJlbGnBYU5d8pQwQUR-WjgNm1z2U7BYZ0zRxxfxS0GmKtV1RvrDeQ/exec" target="_blank" class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+                            </svg>
+                            Floor Specification
+                        </a>
+                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycby9lHNWMLqLA1OigiJlbGnBYU5d8pQwQUR-WjgNm1z2U7BYZ0zRxxfxS0GmKtV1RvrDeQ/exec')">
+                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="link-item">
+                        <a href="https://script.google.com/macros/s/AKfycbx50T62QnVIL4_xs8UE1maSX12k7Bgm-pKyXiK3OUxX4yZSMaRDHiCQmYbtbQmSK64O/exec" target="_blank" class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
+                            </svg>
+                            Packer Input Form
+                        </a>
+                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycbx50T62QnVIL4_xs8UE1maSX12k7Bgm-pKyXiK3OUxX4yZSMaRDHiCQmYbtbQmSK64O/exec')">
+                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="link-item">
+                        <a href="https://script.google.com/macros/s/AKfycbwRdfQX23e-g1wAUiJvgp8dBqnV1cL7BGHOXQgx59imTTzzzEwHUwyW8z25FVp83nJn/exec" target="_blank" class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
+                            </svg>
+                            Maker Input Form
+                        </a>
+                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycbwRdfQX23e-g1wAUiJvgp8dBqnV1cL7BGHOXQgx59imTTzzzEwHUwyW8z25FVp83nJn/exec')">
+                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="link-item disabled">
+                        <div class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Start Up Checklist
+                            <span class="coming-soon">Soon</span>
+                        </div>
+                    </div>
+
+                    <div class="link-item disabled">
+                        <div class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.667 0l3.181-3.183m-4.991-2.691v4.992"/>
+                            </svg>
+                            Brand Change
+                            <span class="coming-soon">Soon</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- ACTIVATED: PACKER INPUT FORM -->
-            <div class="button-wrapper">
-                <a href="https://script.google.com/macros/s/AKfycbx50T62QnVIL4_xs8UE1maSX12k7Bgm-pKyXiK3OUxX4yZSMaRDHiCQmYbtbQmSK64O/exec" target="_blank" class="link-button">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
-                    <span>PACKER INPUT FORM</span>
-                </a>
-                <button class="copy-button" onclick="copyToClipboard(event, 'https://script.google.com/macros/s/AKfycbx50T62QnVIL4_xs8UE1maSX12k7Bgm-pKyXiK3OUxX4yZSMaRDHiCQmYbtbQmSK64O/exec')">
-                    <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                </button>
+            <!-- Databases Section -->
+            <div class="section">
+                <h2 class="section-title">
+                    <svg class="section-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/>
+                    </svg>
+                    Databases
+                </h2>
+                <div class="link-list">
+                    <div class="link-item protected" onclick="openModal('https://docs.google.com/spreadsheets/d/1w7q1GmQi_6uZ0TRe1tBijm_tk7Z8lIuqdu2Z-7KNFs0/edit?gid=1420352432#gid=1420352432')">
+                        <div class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            NCP Database
+                        </div>
+                    </div>
+
+                    <div class="link-item protected" onclick="openModal('https://docs.google.com/spreadsheets/d/1icmcYbS3Hnj54287a5r_zq49ox_aNbThI19vAlA1CFk/edit?gid=751743670#gid=751743670')">
+                        <div class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            NCM Database
+                        </div>
+                    </div>
+
+                    <div class="link-item protected" onclick="openModal('https://docs.google.com/spreadsheets/d/1uVArdxCLGpN66at1cap_WF7d_T6iaPKm5IS4uHmfkoc/edit?gid=0#gid=0')">
+                        <div class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            Floor Specification DB
+                        </div>
+                    </div>
+
+                    <div class="link-item protected" onclick="openModal('https://docs.google.com/spreadsheets/d/1XHMiHjBPJ3ZPMi9XzzvKDN1LAFeff_Vx4skPdxCIKu4/edit?gid=0#gid=0')">
+                        <div class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            Handover Device DB
+                        </div>
+                    </div>
+
+                    <div class="link-item protected" onclick="openModal('https://docs.google.com/spreadsheets/d/1A4pbgRNnF5o4ami9bEG-MViqXn1ueZkgHQr0cjjqfqs/edit?gid=636859897#gid=636859897')">
+                        <div class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            On Leave DB
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- ACTIVATED: MAKER INPUT FORM -->
-            <div class="button-wrapper">
-                <a href="https://script.google.com/macros/s/AKfycbwRdfQX23e-g1wAUiJvgp8dBqnV1cL7BGHOXQgx59imTTzzzEwHUwyW8z25FVp83nJn/exec" target="_blank" class="link-button">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
-                    <span>MAKER INPUT FORM</span>
-                </a>
-                <button class="copy-button" onclick="copyToClipboard(event, 'https://script.google.com/macros/s/AKfycbwRdfQX23e-g1wAUiJvgp8dBqnV1cL7BGHOXQgx59imTTzzzEwHUwyW8z25FVp83nJn/exec')">
-                    <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                </button>
-            </div>
+            <!-- HR & General Forms Section -->
+            <div class="section">
+                <h2 class="section-title">
+                    <svg class="section-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
+                    </svg>
+                    HR & General Forms
+                </h2>
+                <div class="link-list">
+                    <div class="link-item">
+                        <a href="https://script.google.com/macros/s/AKfycbwN5jEtpLDXtWLnbE4ds3pW923q0N1xfwgQRXIFLPdEAuDlswVVofOEAOGhrubqa3S_/exec" target="_blank" class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/>
+                            </svg>
+                            Handover Device
+                        </a>
+                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycbwN5jEtpLDXtWLnbE4ds3pW923q0N1xfwgQRXIFLPdEAuDlswVVofOEAOGhrubqa3S_/exec')">
+                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
 
-            <div class="button-wrapper">
-                <a class="link-button disabled">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span>START UP CHECKLIST</span><span class="coming-soon">Soon</span>
-                </a>
-            </div>
-            <div class="button-wrapper">
-                <a class="link-button disabled">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.667 0l3.181-3.183m-4.991-2.691v4.992" /></svg>
-                    <span>BRAND CHANGE</span><span class="coming-soon">Soon</span>
-                </a>
-            </div>
+                    <div class="link-item">
+                        <a href="https://script.google.com/macros/s/AKfycby16V8knAGHZH0rcv0VFkZw-q1bzqrOEN-aEAMOcs1PEgr-rR7YIN7qWM8nCsMfHZZBQg/exec" target="_blank" class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18"/>
+                            </svg>
+                            On Leave Form
+                        </a>
+                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycby16V8knAGHZH0rcv0VFkZw-q1bzqrOEN-aEAMOcs1PEgr-rR7YIN7qWM8nCsMfHZZBQg/exec')">
+                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
 
-            <h2 class="section-title">Databases</h2>
-            <div class="button-wrapper">
-                <button onclick="openPasswordModal('https://docs.google.com/spreadsheets/d/1w7q1GmQi_6uZ0TRe1tBijm_tk7Z8lIuqdu2Z-7KNFs0/edit?gid=1420352432#gid=1420352432')" class="link-button">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                    <span>NCP DATABASE</span>
-                </button>
-            </div>
-            <div class="button-wrapper">
-                <button onclick="openPasswordModal('https://docs.google.com/spreadsheets/d/1icmcYbS3Hnj54287a5r_zq49ox_aNbThI19vAlA1CFk/edit?gid=751743670#gid=751743670')" class="link-button">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                    <span>NCM DATABASE</span>
-                </button>
-            </div>
-             <div class="button-wrapper">
-                <button onclick="openPasswordModal('https://docs.google.com/spreadsheets/d/1uVArdxCLGpN66at1cap_WF7d_T6iaPKm5IS4uHmfkoc/edit?gid=0#gid=0')" class="link-button">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                    <span>DATABASE FLOOR SPECIFICATION</span>
-                </button>
-            </div>
-             <div class="button-wrapper">
-                <button onclick="openPasswordModal('https://docs.google.com/spreadsheets/d/1XHMiHjBPJ3ZPMi9XzzvKDN1LAFeff_Vx4skPdxCIKu4/edit?gid=0#gid=0')" class="link-button">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                    <span>DATABASE HANDOVER DEVICE</span>
-                </button>
-            </div>
-            <div class="button-wrapper">
-                <button onclick="openPasswordModal('https://docs.google.com/spreadsheets/d/1A4pbgRNnF5o4ami9bEG-MViqXn1ueZkgHQr0cjjqfqs/edit?gid=636859897#gid=636859897')" class="link-button">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                    <span>DATABASE ON LEAVE</span>
-                </button>
-            </div>
-
-            <h2 class="section-title">HR & General Forms</h2>
-            <div class="button-wrapper">
-                <a href="https://script.google.com/macros/s/AKfycbwN5jEtpLDXtWLnbE4ds3pW923q0N1xfwgQRXIFLPdEAuDlswVVofOEAOGhrubqa3S_/exec" target="_blank" class="link-button">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>
-                    <span>HANDOVER DEVICE</span>
-                </a>
-                 <button class="copy-button" onclick="copyToClipboard(event, 'https://script.google.com/macros/s/AKfycbwN5jEtpLDXtWLnbE4ds3pW923q0N1xfwgQRXIFLPdEAuDlswVVofOEAOGhrubqa3S_/exec')">
-                    <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                </button>
-            </div>
-            <div class="button-wrapper">
-                <a href="https://script.google.com/macros/s/AKfycby16V8knAGHZH0rcv0VFkZw-q1bzqrOEN-aEAMOcs1PEgr-rR7YIN7qWM8nCsMfHZZBQg/exec" target="_blank" class="link-button">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18" /></svg>
-                    <span>ON LEAVE FORM</span>
-                </a>
-                <button class="copy-button" onclick="copyToClipboard(event, 'https://script.google.com/macros/s/AKfycby16V8knAGHZH0rcv0VFkZw-q1bzqrOEN-aEAMOcs1PEgr-rR7YIN7qWM8nCsMfHZZBQg/exec')">
-                    <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                </button>
-            </div>
-            <div class="button-wrapper">
-                <a class="link-button disabled">
-                    <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span>OVERTIME FORM</span><span class="coming-soon">Soon</span>
-                </a>
+                    <div class="link-item disabled">
+                        <div class="link-button">
+                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Overtime Form
+                            <span class="coming-soon">Soon</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="footer-credit">
-            <p class="footer-text">QA - PT Broad Far Indonesia | Portal v1.0</p>
-            <p class="developer-credit">Developed by Hersandi Hamdan Pratama</p>
-        </div>
+        <footer>
+            <p class="footer-text">QA - PT Broad Far Indonesia</p>
+            <p class="developer">Developed by Hersandi Hamdan Pratama</p>
+        </footer>
     </div>
 
-    <div id="passwordModal" class="password-modal">
-        <div class="password-modal-content">
-            <span onclick="closePasswordModal()" class="close-button">&times;</span>
-            <h2>Restricted Access</h2>
-            <p style="font-size:15px; color:#666;">Please enter the password to continue.</p>
-            <input type="password" id="passwordInput" class="password-input" placeholder="Password...">
-            <button onclick="checkPassword()" class="password-submit-button">Enter</button>
-            <p id="passwordError">Incorrect password. Access denied.</p>
+    <!-- Password Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Restricted Access</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Please enter password to continue</p>
+            <input type="password" id="passwordInput" class="modal-input" placeholder="Enter password...">
+            <button class="modal-btn" onclick="checkPassword()">Access</button>
+            <p id="errorMsg" class="error-msg">Incorrect password</p>
         </div>
     </div>
 
     <script>
-        // --- Logic for Password Modal ---
-        const modal = document.getElementById('passwordModal');
+        const modal = document.getElementById('modal');
         const passwordInput = document.getElementById('passwordInput');
-        const passwordError = document.getElementById('passwordError');
+        const errorMsg = document.getElementById('errorMsg');
         const correctPassword = 'Broadfar2025';
         let targetUrl = '';
 
-        function openPasswordModal(url) {
+        function openModal(url) {
             targetUrl = url;
             modal.style.display = 'flex';
             passwordInput.value = '';
-            passwordError.style.display = 'none';
+            errorMsg.style.display = 'none';
             passwordInput.focus();
         }
 
-        function closePasswordModal() {
+        function closeModal() {
             modal.style.display = 'none';
         }
 
         function checkPassword() {
             if (passwordInput.value === correctPassword) {
                 window.open(targetUrl, '_blank');
-                closePasswordModal();
+                closeModal();
             } else {
-                passwordError.style.display = 'block';
+                errorMsg.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
             }
         }
 
-        passwordInput.addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                checkPassword();
-            }
+        passwordInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') checkPassword();
         });
 
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                closePasswordModal();
-            }
-        }
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
 
-        // --- Logic for Copy to Clipboard ---
-        function copyToClipboard(event, textToCopy) {
-            event.stopPropagation(); // Mencegah link utama terbuka
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const copyButton = event.currentTarget;
-                const originalIcon = copyButton.innerHTML;
-                copyButton.innerHTML = 'Copied!';
+        function copyLink(event, url) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = event.currentTarget;
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<span style="font-size: 0.75rem;">✓</span>';
+                btn.style.background = 'var(--success)';
+                
                 setTimeout(() => {
-                    copyButton.innerHTML = originalIcon;
-                }, 2000); // Kembali ke ikon semula setelah 2 detik
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
+                    btn.innerHTML = originalHTML;
+                    btn.style.background = '';
+                }, 1500);
             });
         }
 
-        // --- PWA Service Worker Registration ---
+        // Service Worker dengan auto-update
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/Landing-page/service-worker.js')
                     .then(registration => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                        console.log('SW registered');
+                        
+                        // Check for updates setiap 5 menit
+                        setInterval(() => {
+                            registration.update();
+                        }, 5 * 60 * 1000);
+
+                        // Handle updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New version available
+                                    if (confirm('New version available! Reload to update?')) {
+                                        newWorker.postMessage({ action: 'skipWaiting' });
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
                     })
-                    .catch(error => {
-                        console.log('ServiceWorker registration failed: ', error);
-                    });
+                    .catch(err => console.log('SW registration failed:', err));
+            });
+
+            // Reload when new SW takes control
+            let refreshing;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                refreshing = true;
+                window.location.reload();
             });
         }
     </script>
-
 </body>
 </html>
