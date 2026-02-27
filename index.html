@@ -2,765 +2,1039 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Quality Management Portal</title>
-    
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a"/>
-    <link rel="apple-touch-icon" href="logo.png">
-    
-    <!-- Mencegah cache HTML -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* Mobile tap highlight removal */
+        a, button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+
+        /* Prevent font size inflation on iOS */
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
         :root {
-            --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --secondary: #8b5cf6;
-            --surface: rgba(15, 23, 42, 0.85);
-            --surface-light: rgba(30, 41, 59, 0.8);
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --border: rgba(148, 163, 184, 0.2);
-            --success: #10b981;
-            --warning: #f59e0b;
+            --bg: #060a10;
+            --surface: #0d1520;
+            --surface2: #111d2e;
+            --accent: #00d4ff;
+            --accent2: #0066ff;
+            --accent3: #00ff9d;
+            --text: #e8f4ff;
+            --muted: #5a7a99;
+            --border: rgba(0, 212, 255, 0.12);
+            --warn: #ffb300;
         }
 
-        body, html {
-            height: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            overflow-x: hidden;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        html, body { height: 100%; overflow-x: hidden; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
         }
 
-        /* Animated Background */
-        .bg-animation {
+        /* ── BACKGROUND CANVAS ── */
+        #bg-canvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
+            width: 100%; height: 100%;
             z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Aurora glow layers */
+        .aurora {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
             overflow: hidden;
         }
-
-        .bg-animation::before {
-            content: '';
+        .aurora-layer {
             position: absolute;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
-            animation: drift 20s ease-in-out infinite;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0;
+            animation: auroraFade 1s ease-out forwards;
+        }
+        .aurora-1 {
+            width: 70vw; height: 50vh;
+            background: radial-gradient(ellipse, rgba(0,102,255,0.18) 0%, transparent 65%);
+            top: -15vh; left: -10vw;
+            animation: auroraFade 1.2s ease-out 0.1s forwards, auroraMove1 20s ease-in-out 1.3s infinite;
+        }
+        .aurora-2 {
+            width: 60vw; height: 55vh;
+            background: radial-gradient(ellipse, rgba(0,212,255,0.12) 0%, transparent 65%);
+            bottom: -10vh; right: -5vw;
+            animation: auroraFade 1.2s ease-out 0.3s forwards, auroraMove2 25s ease-in-out 1.5s infinite;
+        }
+        .aurora-3 {
+            width: 50vw; height: 40vh;
+            background: radial-gradient(ellipse, rgba(0,255,157,0.08) 0%, transparent 65%);
+            top: 40%; left: 30%;
+            animation: auroraFade 1.2s ease-out 0.5s forwards, auroraMove3 30s ease-in-out 1.7s infinite;
+        }
+        .aurora-4 {
+            width: 45vw; height: 35vh;
+            background: radial-gradient(ellipse, rgba(120,0,255,0.07) 0%, transparent 65%);
+            top: 20%; right: 10%;
+            animation: auroraFade 1.2s ease-out 0.7s forwards, auroraMove4 22s ease-in-out 1.9s infinite;
         }
 
-        @keyframes drift {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(-10%, -10%) rotate(120deg); }
-            66% { transform: translate(10%, 10%) rotate(240deg); }
+        @keyframes auroraFade { to { opacity: 1; } }
+        @keyframes auroraMove1 {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33%     { transform: translate(5vw, 8vh) scale(1.1); }
+            66%     { transform: translate(-3vw, 4vh) scale(0.95); }
+        }
+        @keyframes auroraMove2 {
+            0%,100% { transform: translate(0,0) scale(1); }
+            40%     { transform: translate(-6vw,-5vh) scale(1.15); }
+            70%     { transform: translate(4vw, 3vh) scale(0.9); }
+        }
+        @keyframes auroraMove3 {
+            0%,100% { transform: translate(-50%,-50%) scale(1); }
+            50%     { transform: translate(-50%,-50%) scale(1.25); }
+        }
+        @keyframes auroraMove4 {
+            0%,100% { transform: translate(0,0) scale(1); }
+            45%     { transform: translate(-4vw, 6vh) scale(1.1); }
         }
 
-        /* Main Container */
+        /* Noise grain overlay */
+        .noise {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            animation: grainShift 0.15s steps(1) infinite;
+        }
+        @keyframes grainShift {
+            0%  { background-position: 0 0; }
+            20% { background-position: -15% -20%; }
+            40% { background-position: 10% 15%; }
+            60% { background-position: -5% 10%; }
+            80% { background-position: 20% -10%; }
+        }
+
+        /* Layout */
         .container {
             position: relative;
             z-index: 1;
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
-            min-height: 100vh;
+            padding: 3rem 1.5rem 4rem;
         }
 
         /* Header */
         header {
-            text-align: center;
-            margin-bottom: 3rem;
-            animation: fadeInDown 0.8s ease-out;
+            margin-bottom: 4rem;
+            animation: fadeDown 0.7s ease-out both;
         }
 
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            margin-bottom: 1.75rem;
         }
 
-        .logo-container {
-            margin-bottom: 1.5rem;
+        .logo-wrap {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 30px rgba(0,212,255,0.3);
+            flex-shrink: 0;
+        }
+        .logo-wrap img {
+            width: 36px; height: 36px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
+        .logo-wrap .logo-fallback {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: white;
         }
 
-        .logo {
-            max-width: 140px;
-            filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));
-            animation: pulse 3s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5)); }
-            50% { filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.8)); }
-        }
-
-        h1 {
-            color: var(--text-primary);
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        .header-text h1 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            background: linear-gradient(90deg, #ffffff 0%, var(--accent) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-
-        .description {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.6;
+        .header-text .sub {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
 
-        /* Version Badge */
-        .version-badge {
-            display: inline-block;
-            background: var(--surface-light);
-            color: var(--text-secondary);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin-top: 1rem;
-            border: 1px solid var(--border);
+        .header-desc {
+            color: #7ca0bf;
+            font-size: 1rem;
+            max-width: 560px;
+            line-height: 1.7;
+            font-weight: 300;
         }
 
-        /* Grid Layout */
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            animation: fadeIn 1s ease-out 0.3s both;
+        .badge-row {
+            display: flex; align-items: center; gap: 0.75rem;
+            margin-top: 1.25rem;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .badge {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border: 1px solid;
+            letter-spacing: 0.03em;
         }
+        .badge-blue { background: rgba(0,102,255,0.1); border-color: rgba(0,102,255,0.3); color: #6ab0ff; }
+        .badge-green { background: rgba(0,255,157,0.08); border-color: rgba(0,255,157,0.25); color: #4dffc0; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: blink 2s ease-in-out infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-        /* Section Cards */
-        .section {
-            background: var(--surface);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            padding: 1.5rem;
-            border: 1px solid var(--border);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .section-title {
-            color: var(--text-primary);
-            font-size: 1.25rem;
-            font-weight: 600;
+        /* Section label */
+        .section-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
             margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
         }
 
-        .section-icon {
-            width: 24px;
-            height: 24px;
-            stroke: var(--primary);
+        /* Grid */
+        .section-block { margin-bottom: 3rem; animation: fadeUp 0.6s ease-out both; }
+        .section-block:nth-child(2) { animation-delay: 0.1s; }
+        .section-block:nth-child(3) { animation-delay: 0.2s; }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
         }
 
-        /* Links */
-        .link-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .link-item {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1rem;
-            background: var(--surface-light);
-            border-radius: 12px;
+        /* Card */
+        .card {
+            background: var(--surface);
             border: 1px solid var(--border);
-            transition: all 0.3s;
+            border-radius: 16px;
+            padding: 1.25rem;
+            transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+            position: relative;
             overflow: hidden;
         }
-
-        .link-item::before {
+        .card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--primary);
-            transform: scaleY(0);
-            transition: transform 0.3s;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent2), var(--accent));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .card:hover::before { opacity: 1; }
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0,212,255,0.25);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,212,255,0.08);
         }
 
-        .link-item:hover::before {
-            transform: scaleY(1);
+        .card-header {
+            display: flex; align-items: center; gap: 0.75rem;
+            margin-bottom: 1rem;
         }
-
-        .link-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: var(--primary);
-            transform: translateX(5px);
-        }
-
-        .link-button {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: var(--text-primary);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .link-icon {
-            width: 20px;
-            height: 20px;
-            stroke: var(--primary);
+        .card-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--surface2);
+            border: 1px solid var(--border);
             flex-shrink: 0;
         }
-
-        .copy-btn {
-            background: rgba(59, 130, 246, 0.2);
-            border: none;
-            padding: 0.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .card-icon svg { width: 18px; height: 18px; stroke: var(--accent); }
+        .card-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+        .card-desc {
+            font-size: 0.78rem;
+            color: var(--muted);
+            margin-top: 0.1rem;
         }
 
-        .copy-btn:hover {
-            background: var(--primary);
-        }
-
-        .copy-icon {
-            width: 18px;
-            height: 18px;
-            stroke: var(--text-primary);
-        }
-
-        /* Disabled State */
-        .disabled {
-            opacity: 0.5;
+        /* Coming soon card */
+        .card.coming-soon-card {
+            opacity: 0.45;
             pointer-events: none;
         }
-
-        .coming-soon {
-            font-size: 0.75rem;
-            color: var(--warning);
+        .coming-tag {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 999px;
+            background: rgba(255,179,0,0.12);
+            border: 1px solid rgba(255,179,0,0.3);
+            color: var(--warn);
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            text-transform: uppercase;
             margin-left: auto;
         }
 
-        /* Password Protected */
-        .protected {
+        /* Button row */
+        .btn-row {
+            display: flex; gap: 0.6rem; flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.55rem 1rem;
+            border-radius: 9px;
+            font-size: 0.8rem;
+            font-weight: 500;
             cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn svg { width: 14px; height: 14px; stroke: currentColor; flex-shrink: 0; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0,102,255,0.3);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 4px 20px rgba(0,212,255,0.45);
+            transform: translateY(-1px);
+        }
+
+        .btn-db {
+            background: rgba(0,255,157,0.08);
+            border: 1px solid rgba(0,255,157,0.2);
+            color: #4dffc0;
+        }
+        .btn-db:hover {
+            background: rgba(0,255,157,0.15);
+            border-color: rgba(0,255,157,0.4);
+        }
+
+        .btn-copy {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 0.55rem 0.7rem;
+        }
+        .btn-copy:hover { color: var(--text); border-color: var(--accent); }
+        .btn-copy.copied { color: var(--accent3); border-color: var(--accent3); }
+
+        /* HR Section - protected */
+        .btn-protected {
+            background: rgba(0,102,255,0.1);
+            border: 1px solid rgba(0,102,255,0.25);
+            color: #6ab0ff;
+        }
+        .btn-protected:hover {
+            background: rgba(0,102,255,0.18);
+            border-color: rgba(0,102,255,0.5);
         }
 
         /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            justify-content: center;
-            align-items: center;
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            justify-content: center; align-items: center;
         }
-
-        .modal-content {
+        .modal-overlay.open { display: flex; }
+        .modal-box {
             background: var(--surface);
-            padding: 2rem;
-            border-radius: 16px;
             border: 1px solid var(--border);
-            width: 90%;
-            max-width: 400px;
-            animation: slideUp 0.3s ease-out;
+            border-radius: 20px;
+            padding: 2rem;
+            width: 90%; max-width: 380px;
+            animation: slideUp 0.3s ease-out both;
         }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
+        @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
 
         .modal-title {
-            color: var(--text-primary);
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700; font-size: 1.2rem;
+            margin-bottom: 0.4rem;
         }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            transition: all 0.3s;
-        }
-
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+        .modal-sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
 
         .modal-input {
-            width: 100%;
-            padding: 0.75rem;
-            background: var(--surface-light);
+            width: 100%; padding: 0.75rem 1rem;
+            background: var(--surface2);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            margin-bottom: 1rem;
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: 'DM Sans', sans-serif;
+            margin-bottom: 0.75rem;
+            transition: border-color 0.2s;
         }
+        .modal-input:focus { outline: none; border-color: var(--accent); }
+        .modal-input.error { border-color: #ff4d4d; }
 
-        .modal-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .modal-btn {
-            width: 100%;
-            padding: 0.75rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .modal-btn:hover {
-            background: var(--primary-dark);
-        }
-
-        .error-msg {
-            color: #ef4444;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
+        .modal-error {
+            color: #ff6b6b; font-size: 0.8rem;
+            margin-bottom: 0.75rem;
             display: none;
         }
+
+        .modal-actions { display: flex; gap: 0.6rem; }
+        .btn-modal-ok {
+            flex: 1; padding: 0.7rem;
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            color: white; border: none; border-radius: 10px;
+            font-family: 'Syne', sans-serif; font-weight: 700;
+            font-size: 0.9rem; cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-modal-ok:hover { opacity: 0.88; }
+        .btn-modal-cancel {
+            padding: 0.7rem 1.2rem;
+            background: var(--surface2);
+            color: var(--muted); border: 1px solid var(--border);
+            border-radius: 10px; cursor: pointer; font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .btn-modal-cancel:hover { color: var(--text); }
 
         /* Footer */
         footer {
-            margin-top: 3rem;
+            margin-top: 4rem;
             text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            animation: fadeIn 1s ease-out 0.6s both;
+            color: var(--muted);
+            font-size: 0.8rem;
+            line-height: 1.8;
+            animation: fadeUp 0.6s ease-out 0.4s both;
+        }
+        footer strong { color: #5a9abf; font-weight: 500; }
+
+        /* Animations */
+        @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 2.5rem 0;
         }
 
-        .footer-text {
-            margin-bottom: 0.5rem;
-        }
-
-        .developer {
-            opacity: 0.7;
-        }
-
-        /* Responsive */
+        /* ── Tablet (≤ 768px) ── */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
+            .container { padding: 2rem 1rem 3rem; }
+            header { margin-bottom: 2.5rem; }
+            .cards-grid { grid-template-columns: 1fr; gap: 0.85rem; }
+            .section-block { margin-bottom: 2rem; }
+        }
+
+        /* ── Mobile (≤ 480px) ── */
+        @media (max-width: 480px) {
+            .container { padding: 1.25rem 0.9rem 2.5rem; }
+
+            /* Header */
+            .header-top { gap: 0.9rem; margin-bottom: 1.25rem; }
+            .logo-wrap { width: 44px; height: 44px; border-radius: 12px; }
+            .logo-wrap img { width: 28px; height: 28px; }
+            .logo-wrap .logo-fallback { font-size: 1.1rem; }
+            .header-text h1 { font-size: 1.35rem; }
+            .header-text .sub { font-size: 0.75rem; }
+            .header-desc { font-size: 0.88rem; }
+            .badge-row { flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+            .badge { font-size: 0.7rem; padding: 0.25rem 0.65rem; }
+
+            /* Section label */
+            .section-label { font-size: 0.65rem; margin-bottom: 0.75rem; }
+
+            /* Cards */
+            .card { padding: 1rem; border-radius: 14px; }
+            .card-header { margin-bottom: 0.85rem; gap: 0.65rem; }
+            .card-icon { width: 32px; height: 32px; border-radius: 9px; }
+            .card-icon svg { width: 16px; height: 16px; }
+            .card-title { font-size: 0.88rem; }
+            .card-desc { font-size: 0.72rem; }
+            .coming-tag { font-size: 0.6rem; padding: 0.15rem 0.4rem; }
+
+            /* Buttons — full width on mobile */
+            .btn-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 0.7rem 1rem;
+                font-size: 0.85rem;
+                border-radius: 10px;
+                /* Bigger touch target */
+                min-height: 44px;
+            }
+            /* Copy button stays small & sits at end */
+            .btn-copy {
+                width: auto;
+                align-self: flex-end;
+                padding: 0.6rem 0.85rem;
             }
 
-            .content-grid {
-                grid-template-columns: 1fr;
+            /* Modal */
+            .modal-box {
+                padding: 1.5rem 1.25rem;
+                border-radius: 16px;
+                width: 95%;
             }
+            .modal-title { font-size: 1.05rem; }
+            .modal-sub { font-size: 0.8rem; margin-bottom: 1.2rem; }
+            .modal-input { font-size: 1rem; padding: 0.7rem 0.9rem; }
+            .btn-modal-ok, .btn-modal-cancel { font-size: 0.88rem; padding: 0.65rem 1rem; min-height: 44px; }
 
-            .section {
-                padding: 1.25rem;
-            }
+            footer { font-size: 0.75rem; margin-top: 2.5rem; }
         }
     </style>
 </head>
 <body>
-    <div class="bg-animation"></div>
-    
-    <div class="container">
-        <header>
-            <div class="logo-container">
-                <img src="logo.png" alt="Company Logo" class="logo">
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="aurora">
+    <div class="aurora-layer aurora-1"></div>
+    <div class="aurora-layer aurora-2"></div>
+    <div class="aurora-layer aurora-3"></div>
+    <div class="aurora-layer aurora-4"></div>
+</div>
+
+<div class="noise"></div>
+
+<div class="container">
+
+    <!-- Header -->
+    <header>
+        <div class="header-top">
+            <div class="logo-wrap">
+                <img src="logo.png" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                <span class="logo-fallback" style="display:none">QA</span>
             </div>
-            <h1>Quality Management Portal</h1>
-            <p class="description">
-                Centralized access point for all forms, applications, and data related to NCP & NCM processes
-            </p>
-            <div class="version-badge">v2.0 • Updated Jan 2026</div>
-        </header>
-
-        <div class="content-grid">
-            <!-- Quality & Production Section -->
-            <div class="section">
-                <h2 class="section-title">
-                    <svg class="section-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    Quality & Production
-                </h2>
-                <div class="link-list">
-                    <div class="link-item">
-                        <a href="https://script.google.com/macros/s/AKfycbzy1uyzKqQeroolMP31Ef009bt6HXaQtzuG8xzGnFoiY6e94uDm2XICnUVOJV0GYlUT/exec" target="_blank" class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            NCP Form
-                        </a>
-                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycbzy1uyzKqQeroolMP31Ef009bt6HXaQtzuG8xzGnFoiY6e94uDm2XICnUVOJV0GYlUT/exec')">
-                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="link-item">
-                        <a href="https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec" target="_blank" class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10m16-10v10M9 3h6m-6 18h6M4 12h16"/>
-                            </svg>
-                            NCM Form
-                        </a>
-                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec')">
-                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="link-item">
-                        <a href="https://script.google.com/macros/s/AKfycby9lHNWMLqLA1OigiJlbGnBYU5d8pQwQUR-WjgNm1z2U7BYZ0zRxxfxS0GmKtV1RvrDeQ/exec" target="_blank" class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
-                            </svg>
-                            Floor Specification
-                        </a>
-                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycby9lHNWMLqLA1OigiJlbGnBYU5d8pQwQUR-WjgNm1z2U7BYZ0zRxxfxS0GmKtV1RvrDeQ/exec')">
-                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="link-item">
-                        <a href="https://script.google.com/macros/s/AKfycbx50T62QnVIL4_xs8UE1maSX12k7Bgm-pKyXiK3OUxX4yZSMaRDHiCQmYbtbQmSK64O/exec" target="_blank" class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
-                            </svg>
-                            Packer Input Form
-                        </a>
-                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycbx50T62QnVIL4_xs8UE1maSX12k7Bgm-pKyXiK3OUxX4yZSMaRDHiCQmYbtbQmSK64O/exec')">
-                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="link-item">
-                        <a href="https://script.google.com/macros/s/AKfycbwRdfQX23e-g1wAUiJvgp8dBqnV1cL7BGHOXQgx59imTTzzzEwHUwyW8z25FVp83nJn/exec" target="_blank" class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
-                            </svg>
-                            Maker Input Form
-                        </a>
-                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycbwRdfQX23e-g1wAUiJvgp8dBqnV1cL7BGHOXQgx59imTTzzzEwHUwyW8z25FVp83nJn/exec')">
-                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="link-item disabled">
-                        <div class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            Start Up Checklist
-                            <span class="coming-soon">Soon</span>
-                        </div>
-                    </div>
-
-                    <div class="link-item disabled">
-                        <div class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.667 0l3.181-3.183m-4.991-2.691v4.992"/>
-                            </svg>
-                            Brand Change
-                            <span class="coming-soon">Soon</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Databases Section -->
-            <div class="section">
-                <h2 class="section-title">
-                    <svg class="section-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/>
-                    </svg>
-                    Databases
-                </h2>
-                <div class="link-list">
-                    <div class="link-item protected" onclick="openModal('https://docs.google.com/spreadsheets/d/1w7q1GmQi_6uZ0TRe1tBijm_tk7Z8lIuqdu2Z-7KNFs0/edit?gid=1420352432#gid=1420352432')">
-                        <div class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                            NCP Database
-                        </div>
-                    </div>
-
-                    <div class="link-item protected" onclick="openModal('https://docs.google.com/spreadsheets/d/1icmcYbS3Hnj54287a5r_zq49ox_aNbThI19vAlA1CFk/edit?gid=751743670#gid=751743670')">
-                        <div class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                            NCM Database
-                        </div>
-                    </div>
-
-                    <div class="link-item protected" onclick="openModal('https://docs.google.com/spreadsheets/d/1uVArdxCLGpN66at1cap_WF7d_T6iaPKm5IS4uHmfkoc/edit?gid=0#gid=0')">
-                        <div class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                            Floor Specification DB
-                        </div>
-                    </div>
-
-                    <div class="link-item protected" onclick="openModal('https://docs.google.com/spreadsheets/d/1XHMiHjBPJ3ZPMi9XzzvKDN1LAFeff_Vx4skPdxCIKu4/edit?gid=0#gid=0')">
-                        <div class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                            Handover Device DB
-                        </div>
-                    </div>
-
-                    <div class="link-item protected" onclick="openModal('https://docs.google.com/spreadsheets/d/1A4pbgRNnF5o4ami9bEG-MViqXn1ueZkgHQr0cjjqfqs/edit?gid=636859897#gid=636859897')">
-                        <div class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                            On Leave DB
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- HR & General Forms Section -->
-            <div class="section">
-                <h2 class="section-title">
-                    <svg class="section-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
-                    </svg>
-                    HR & General Forms
-                </h2>
-                <div class="link-list">
-                    <div class="link-item">
-                        <a href="https://script.google.com/macros/s/AKfycbwN5jEtpLDXtWLnbE4ds3pW923q0N1xfwgQRXIFLPdEAuDlswVVofOEAOGhrubqa3S_/exec" target="_blank" class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/>
-                            </svg>
-                            Handover Device
-                        </a>
-                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycbwN5jEtpLDXtWLnbE4ds3pW923q0N1xfwgQRXIFLPdEAuDlswVVofOEAOGhrubqa3S_/exec')">
-                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="link-item">
-                        <a href="https://script.google.com/macros/s/AKfycby16V8knAGHZH0rcv0VFkZw-q1bzqrOEN-aEAMOcs1PEgr-rR7YIN7qWM8nCsMfHZZBQg/exec" target="_blank" class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18"/>
-                            </svg>
-                            On Leave Form
-                        </a>
-                        <button class="copy-btn" onclick="copyLink(event, 'https://script.google.com/macros/s/AKfycby16V8knAGHZH0rcv0VFkZw-q1bzqrOEN-aEAMOcs1PEgr-rR7YIN7qWM8nCsMfHZZBQg/exec')">
-                            <svg class="copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="link-item disabled">
-                        <div class="link-button">
-                            <svg class="link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            Overtime Form
-                            <span class="coming-soon">Soon</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="header-text">
+                <h1>Quality Management Portal</h1>
+                <div class="sub">PT Broad Far Indonesia</div>
             </div>
         </div>
+        <p class="header-desc">
+            Centralized access hub for all forms and databases related to NCP, NCM, and general Quality Assurance processes.
+        </p>
+        <div class="badge-row">
+            <span class="badge badge-blue"><span class="dot"></span>v2.1 — Updated Feb 2026</span>
+            <span class="badge badge-green"><span class="dot"></span>QA Division</span>
+        </div>
+    </header>
 
-        <footer>
-            <p class="footer-text">QA - PT Broad Far Indonesia</p>
-            <p class="developer">Developed by Hersandi Hamdan Pratama</p>
-        </footer>
-    </div>
+    <!-- Section 1: Quality & Production -->
+    <div class="section-block">
+        <div class="section-label">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="stroke:var(--accent)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Quality &amp; Production
+        </div>
+        <div class="cards-grid">
 
-    <!-- Password Modal -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Restricted Access</h3>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
+            <!-- NCP -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                    </div>
+                    <div>
+                        <div class="card-title">NCP — Non-Conformance Product</div>
+                        <div class="card-desc">Input & track non-conforming products</div>
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <a href="https://script.google.com/macros/s/AKfycbyGz6SqdT9Z3mj8ixP78NuxGiwsqL7agz8yVbi66zWNG4dD3Arkn7tVCXhD8Wd4U2AL/exec" target="_blank" class="btn btn-primary">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                        Input Form
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1Rbz3hmqmHjNwBWwusHeY987MUKAqeRFqozCS412THjg/edit?usp=sharing" target="_blank" class="btn btn-db">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375"/></svg>
+                        Database
+                    </a>
+                    <button class="btn btn-copy" onclick="copyURL(this, 'https://script.google.com/macros/s/AKfycbyGz6SqdT9Z3mj8ixP78NuxGiwsqL7agz8yVbi66zWNG4dD3Arkn7tVCXhD8Wd4U2AL/exec')">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                </div>
             </div>
-            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Please enter password to continue</p>
-            <input type="password" id="passwordInput" class="modal-input" placeholder="Enter password...">
-            <button class="modal-btn" onclick="checkPassword()">Access</button>
-            <p id="errorMsg" class="error-msg">Incorrect password</p>
+
+            <!-- NCM -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+                    </div>
+                    <div>
+                        <div class="card-title">NCM — Non-Conformance Material</div>
+                        <div class="card-desc">Input & track non-conforming materials</div>
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <a href="https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec" target="_blank" class="btn btn-primary">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                        Input Form
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1icmcYbS3Hnj54287a5r_zq49ox_aNbThI19vAlA1CFk/edit?usp=sharing" target="_blank" class="btn btn-db">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375"/></svg>
+                        Database
+                    </a>
+                    <button class="btn btn-copy" onclick="copyURL(this, 'https://script.google.com/macros/s/AKfycbyyOj9kIf1mihKdNKzQC-9O6iYM0cefAKq_8NWskwqQv1bm5wSCp_mlV-mQrKgVGNkg/exec')">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Floor Specifications -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                    </div>
+                    <div>
+                        <div class="card-title">Floor Specifications</div>
+                        <div class="card-desc">Production floor spec entries</div>
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <a href="https://script.google.com/macros/s/AKfycby9lHNWMLqLA1OigiJlbGnBYU5d8pQwQUR-WjgNm1z2U7BYZ0zRxxfxS0GmKtV1RvrDeQ/exec" target="_blank" class="btn btn-primary">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                        Input Form
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1uVArdxCLGpN66at1cap_WF7d_T6iaPKm5IS4uHmfkoc/edit?usp=sharing" target="_blank" class="btn btn-db">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375"/></svg>
+                        Database
+                    </a>
+                    <button class="btn btn-copy" onclick="copyURL(this, 'https://script.google.com/macros/s/AKfycby9lHNWMLqLA1OigiJlbGnBYU5d8pQwQUR-WjgNm1z2U7BYZ0zRxxfxS0GmKtV1RvrDeQ/exec')">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Packer Input -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>
+                    </div>
+                    <div>
+                        <div class="card-title">Packer Input</div>
+                        <div class="card-desc">Daily packing production entry</div>
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <a href="https://script.google.com/macros/s/AKfycbx50T62QnVIL4_xs8UE1maSX12k7Bgm-pKyXiK3OUxX4yZSMaRDHiCQmYbtbQmSK64O/exec" target="_blank" class="btn btn-primary">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                        Input Form
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1W1_a7FMGHj6mJAcBHOjTENBxXSsCBJegnIu9Z57mcUk/edit?usp=sharing" target="_blank" class="btn btn-db">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375"/></svg>
+                        Database
+                    </a>
+                    <button class="btn btn-copy" onclick="copyURL(this, 'https://script.google.com/macros/s/AKfycbx50T62QnVIL4_xs8UE1maSX12k7Bgm-pKyXiK3OUxX4yZSMaRDHiCQmYbtbQmSK64O/exec')">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Maker Input -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/></svg>
+                    </div>
+                    <div>
+                        <div class="card-title">Maker Input</div>
+                        <div class="card-desc">Daily making production entry</div>
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <a href="https://script.google.com/macros/s/AKfycbwRdfQX23e-g1wAUiJvgp8dBqnV1cL7BGHOXQgx59imTTzzzEwHUwyW8z25FVp83nJn/exec" target="_blank" class="btn btn-primary">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                        Input Form
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/10sjB7uQjO07IoSzQeybskAs7-_FpBeQVRP9ONMlDGDg/edit?usp=sharing" target="_blank" class="btn btn-db">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375"/></svg>
+                        Database
+                    </a>
+                    <button class="btn btn-copy" onclick="copyURL(this, 'https://script.google.com/macros/s/AKfycbwRdfQX23e-g1wAUiJvgp8dBqnV1cL7BGHOXQgx59imTTzzzEwHUwyW8z25FVp83nJn/exec')">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Start Up Checklist (coming soon) -->
+            <div class="card coming-soon-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <div class="card-title">Start Up Checklist</div>
+                        <div class="card-desc">Pre-production checklist form</div>
+                    </div>
+                    <span class="coming-tag">Soon</span>
+                </div>
+                <div class="btn-row">
+                    <span class="btn btn-primary" style="opacity:.5">Input Form</span>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <script>
-        const modal = document.getElementById('modal');
-        const passwordInput = document.getElementById('passwordInput');
-        const errorMsg = document.getElementById('errorMsg');
-        const correctPassword = 'Broadfar2025';
-        let targetUrl = '';
+    <div class="divider"></div>
 
-        function openModal(url) {
-            targetUrl = url;
-            modal.style.display = 'flex';
-            passwordInput.value = '';
-            errorMsg.style.display = 'none';
-            passwordInput.focus();
+    <!-- Section 2: HR & General Forms -->
+    <div class="section-block">
+        <div class="section-label">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="stroke:var(--accent)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+            HR &amp; General Forms
+        </div>
+        <div class="cards-grid">
+
+            <!-- Handover Device -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
+                    </div>
+                    <div>
+                        <div class="card-title">Handover Device</div>
+                        <div class="card-desc">Device handover documentation</div>
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <a href="https://script.google.com/macros/s/AKfycbwN5jEtpLDXtWLnbE4ds3pW923q0N1xfwgQRXIFLPdEAuDlswVVofOEAOGhrubqa3S_/exec" target="_blank" class="btn btn-primary">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                        Input Form
+                    </a>
+                    <button class="btn btn-protected" onclick="openModal('https://docs.google.com/spreadsheets/d/1XHMiHjBPJ3ZPMi9XzzvKDN1LAFeff_Vx4skPdxCIKu4/edit?gid=0#gid=0')">
+                        <svg fill="none" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        Database
+                    </button>
+                    <button class="btn btn-copy" onclick="copyURL(this, 'https://script.google.com/macros/s/AKfycbwN5jEtpLDXtWLnbE4ds3pW923q0N1xfwgQRXIFLPdEAuDlswVVofOEAOGhrubqa3S_/exec')">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- On Leave -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18"/></svg>
+                    </div>
+                    <div>
+                        <div class="card-title">On Leave</div>
+                        <div class="card-desc">Employee leave request form</div>
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <a href="https://script.google.com/macros/s/AKfycby16V8knAGHZH0rcv0VFkZw-q1bzqrOEN-aEAMOcs1PEgr-rR7YIN7qWM8nCsMfHZZBQg/exec" target="_blank" class="btn btn-primary">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                        Input Form
+                    </a>
+                    <button class="btn btn-protected" onclick="openModal('https://docs.google.com/spreadsheets/d/1A4pbgRNnF5o4ami9bEG-MViqXn1ueZkgHQr0cjjqfqs/edit?gid=636859897#gid=636859897')">
+                        <svg fill="none" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        Database
+                    </button>
+                    <button class="btn btn-copy" onclick="copyURL(this, 'https://script.google.com/macros/s/AKfycby16V8knAGHZH0rcv0VFkZw-q1bzqrOEN-aEAMOcs1PEgr-rR7YIN7qWM8nCsMfHZZBQg/exec')">
+                        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Overtime Form (coming soon) -->
+            <div class="card coming-soon-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <div class="card-title">Overtime Form</div>
+                        <div class="card-desc">Employee overtime request</div>
+                    </div>
+                    <span class="coming-tag">Soon</span>
+                </div>
+                <div class="btn-row">
+                    <span class="btn btn-primary" style="opacity:.5">Input Form</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>QA Division — <strong>PT Broad Far Indonesia</strong></p>
+        <p style="margin-top:0.25rem; font-size:0.75rem; opacity:0.5">Developed by Hersandi Hamdan Pratama</p>
+    </footer>
+
+</div>
+
+<!-- Password Modal -->
+<div class="modal-overlay" id="modal">
+    <div class="modal-box">
+        <div class="modal-title">Restricted Access</div>
+        <div class="modal-sub">Enter password to access this database</div>
+        <input type="password" id="pwInput" class="modal-input" placeholder="Password..." autocomplete="off">
+        <div class="modal-error" id="pwError">Incorrect password. Please try again.</div>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-modal-ok" onclick="checkPw()">Access</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const PASS = 'Broadfar2025';
+    let target = '';
+
+    function openModal(url) {
+        target = url;
+        const m = document.getElementById('modal');
+        const inp = document.getElementById('pwInput');
+        const err = document.getElementById('pwError');
+        inp.value = '';
+        inp.classList.remove('error');
+        err.style.display = 'none';
+        m.classList.add('open');
+        setTimeout(() => inp.focus(), 200);
+    }
+
+    function closeModal() {
+        document.getElementById('modal').classList.remove('open');
+    }
+
+    function checkPw() {
+        const inp = document.getElementById('pwInput');
+        const err = document.getElementById('pwError');
+        if (inp.value === PASS) {
+            window.open(target, '_blank');
+            closeModal();
+        } else {
+            inp.classList.add('error');
+            err.style.display = 'block';
+            inp.value = '';
+            inp.focus();
+            setTimeout(() => inp.classList.remove('error'), 600);
+        }
+    }
+
+    document.getElementById('pwInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') checkPw();
+    });
+
+    document.getElementById('modal').addEventListener('click', e => {
+        if (e.target === e.currentTarget) closeModal();
+    });
+
+    function copyURL(btn, url) {
+        navigator.clipboard.writeText(url).then(() => {
+            btn.classList.add('copied');
+            const icon = btn.querySelector('svg');
+            btn.innerHTML = `<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>`;
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.innerHTML = `<svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" stroke="currentColor"/></svg>`;
+                btn.classList.remove('copied');
+            }, 1800);
+        });
+    }
+
+    /* ── CANVAS BACKGROUND: particles + grid ── */
+    (function () {
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let W, H, particles, gridLines, raf;
+        const isMobile = () => window.innerWidth < 600;
+
+        function resize() {
+            W = canvas.width  = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            initGrid();
         }
 
-        function closeModal() {
-            modal.style.display = 'none';
+        /* ── Grid lines ── */
+        function initGrid() {
+            gridLines = [];
+            const step = isMobile() ? 80 : 100;
+            // Vertical
+            for (let x = 0; x <= W; x += step) gridLines.push({ x1:x, y1:0, x2:x, y2:H, horiz:false });
+            // Horizontal
+            for (let y = 0; y <= H; y += step) gridLines.push({ x1:0, y1:y, x2:W, y2:y, horiz:true });
         }
 
-        function checkPassword() {
-            if (passwordInput.value === correctPassword) {
-                window.open(targetUrl, '_blank');
-                closeModal();
-            } else {
-                errorMsg.style.display = 'block';
-                passwordInput.value = '';
-                passwordInput.focus();
+        /* ── Particles ── */
+        const COLORS = ['rgba(0,212,255,', 'rgba(0,102,255,', 'rgba(0,255,157,', 'rgba(140,80,255,'];
+        function mkParticle() {
+            return {
+                x: Math.random() * W,
+                y: Math.random() * H,
+                r: Math.random() * (isMobile() ? 1.2 : 1.8) + 0.3,
+                vx: (Math.random() - 0.5) * 0.35,
+                vy: (Math.random() - 0.5) * 0.35,
+                color: COLORS[Math.floor(Math.random() * COLORS.length)],
+                alpha: Math.random() * 0.6 + 0.15,
+                pulse: Math.random() * Math.PI * 2,
+                pulseSpeed: Math.random() * 0.02 + 0.005,
+                // trailing line targets
+                connections: 0
+            };
+        }
+
+        function initParticles() {
+            const count = isMobile() ? 45 : 90;
+            particles = Array.from({ length: count }, mkParticle);
+        }
+
+        /* ── Draw grid ── */
+        function drawGrid(t) {
+            ctx.save();
+            gridLines.forEach((l, i) => {
+                const phase = (t * 0.0004 + i * 0.05) % (Math.PI * 2);
+                const a = 0.025 + Math.sin(phase) * 0.012;
+                ctx.beginPath();
+                ctx.moveTo(l.x1, l.y1);
+                ctx.lineTo(l.x2, l.y2);
+                ctx.strokeStyle = `rgba(0,180,255,${a})`;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            });
+            ctx.restore();
+        }
+
+        /* ── Draw connections ── */
+        const MAX_DIST = 120;
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < MAX_DIST) {
+                        const a = (1 - dist / MAX_DIST) * 0.18;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(0,200,255,${a})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.stroke();
+                    }
+                }
             }
         }
 
-        passwordInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') checkPassword();
-        });
+        /* ── Draw particles ── */
+        function drawParticles(t) {
+            particles.forEach(p => {
+                p.pulse += p.pulseSpeed;
+                const alphaMod = p.alpha + Math.sin(p.pulse) * 0.12;
 
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
+                // Glow
+                const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 5);
+                grd.addColorStop(0, p.color + alphaMod + ')');
+                grd.addColorStop(1, p.color + '0)');
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r * 5, 0, Math.PI * 2);
+                ctx.fillStyle = grd;
+                ctx.fill();
 
-        function copyLink(event, url) {
-            event.preventDefault();
-            event.stopPropagation();
-            
-            navigator.clipboard.writeText(url).then(() => {
-                const btn = event.currentTarget;
-                const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<span style="font-size: 0.75rem;">✓</span>';
-                btn.style.background = 'var(--success)';
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                    btn.style.background = '';
-                }, 1500);
+                // Core dot
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = p.color + (alphaMod * 2) + ')';
+                ctx.fill();
+
+                // Move
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < -10) p.x = W + 10;
+                if (p.x > W + 10) p.x = -10;
+                if (p.y < -10) p.y = H + 10;
+                if (p.y > H + 10) p.y = -10;
             });
         }
 
-        // Service Worker dengan auto-update
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/Landing-page/service-worker.js')
-                    .then(registration => {
-                        console.log('SW registered');
-                        
-                        // Check for updates setiap 5 menit
-                        setInterval(() => {
-                            registration.update();
-                        }, 5 * 60 * 1000);
-
-                        // Handle updates
-                        registration.addEventListener('updatefound', () => {
-                            const newWorker = registration.installing;
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    // New version available
-                                    if (confirm('New version available! Reload to update?')) {
-                                        newWorker.postMessage({ action: 'skipWaiting' });
-                                        window.location.reload();
-                                    }
-                                }
-                            });
-                        });
-                    })
-                    .catch(err => console.log('SW registration failed:', err));
-            });
-
-            // Reload when new SW takes control
-            let refreshing;
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (refreshing) return;
-                refreshing = true;
-                window.location.reload();
-            });
+        /* ── Scan line ── */
+        let scanY = 0;
+        function drawScanLine(t) {
+            scanY = (scanY + 0.4) % H;
+            const grad = ctx.createLinearGradient(0, scanY - 40, 0, scanY + 40);
+            grad.addColorStop(0,   'rgba(0,212,255,0)');
+            grad.addColorStop(0.5, 'rgba(0,212,255,0.04)');
+            grad.addColorStop(1,   'rgba(0,212,255,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, scanY - 40, W, 80);
         }
-    </script>
+
+        /* ── Main loop ── */
+        function draw(t) {
+            ctx.clearRect(0, 0, W, H);
+            drawGrid(t);
+            drawConnections();
+            drawParticles(t);
+            drawScanLine(t);
+            raf = requestAnimationFrame(draw);
+        }
+
+        function init() {
+            resize();
+            initParticles();
+            if (raf) cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', () => { resize(); initParticles(); });
+        init();
+    })();
+</script>
 </body>
 </html>
